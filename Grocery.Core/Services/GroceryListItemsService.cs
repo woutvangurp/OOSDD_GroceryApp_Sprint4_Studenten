@@ -8,11 +8,13 @@ namespace Grocery.Core.Services
     {
         private readonly IGroceryListItemsRepository _groceriesRepository;
         private readonly IProductRepository _productRepository;
+        private readonly IBoughtProductsService _iBoughtProductsService;
 
-        public GroceryListItemsService(IGroceryListItemsRepository groceriesRepository, IProductRepository productRepository)
+        public GroceryListItemsService(IGroceryListItemsRepository groceriesRepository, IProductRepository productRepository, IBoughtProductsService iboughtProductsService)
         {
             _groceriesRepository = groceriesRepository;
             _productRepository = productRepository;
+            _iBoughtProductsService = iboughtProductsService;
         }
 
         public List<GroceryListItem> GetAll()
@@ -51,7 +53,25 @@ namespace Grocery.Core.Services
 
         public List<BestSellingProducts> GetBestSellingProducts(int topX = 5)
         {
-            throw new NotImplementedException();
+            Dictionary<string, int> boughtDictionary = new Dictionary<string, int>(); 
+            int productCount = _productRepository.GetAll().Count;
+            for (int i = 1; i < productCount; i++)
+            {
+                List<BoughtProducts> boughtProductsList = _iBoughtProductsService.Get(productCount);
+                string productName = boughtProductsList.FirstOrDefault().Product.name ?? throw new NullReferenceException();
+                int soldAmount = 0;
+                foreach (BoughtProducts boughtProduct in boughtProductsList)
+                {
+                    List<GroceryListItem> groceryListItems = _groceriesRepository.GetAllOnGroceryListId(boughtProduct.GroceryList.Id);
+                    soldAmount += groceryListItems.Where(listItem => listItem.Product.name == productName).Sum(listItem => listItem.Amount);
+                }
+                boughtDictionary.Add(productName, soldAmount);
+                productName = string.Empty;
+                soldAmount = 0;
+            }
+
+            //boughtdict zitten alle producten in die verkocht worden met de hoeveelheid dat ze in de
+
         }
 
         private void FillService(List<GroceryListItem> groceryListItems)
