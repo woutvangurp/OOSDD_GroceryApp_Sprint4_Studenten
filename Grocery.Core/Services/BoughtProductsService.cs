@@ -1,5 +1,4 @@
-﻿
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using Grocery.Core.Interfaces.Repositories;
 using Grocery.Core.Interfaces.Services;
 using Grocery.Core.Models;
@@ -18,19 +17,32 @@ namespace Grocery.Core.Services {
         }
         public List<BoughtProducts> Get(int? productId) {
             if (productId == null)
-                throw new NullReferenceException();
+                throw new NullReferenceException(nameof(productId));
 
-            Product selectedProduct = _productRepository.Get((int)productId) ?? throw new InvalidOperationException();
-            List<GroceryListItem> listItems = _groceryListItemsRepository.GetAll();
-            List<BoughtProducts> returnProductsList = new List<BoughtProducts>();
+            List<GroceryListItem> matchingItems = _groceryListItemsRepository
+                .GetAll()
+                .Where(li => li.ProductId == productId)
+                .ToList();
 
-            foreach (GroceryListItem item in listItems) {
-                GroceryList list = _groceryListRepository.Get(item.GroceryListId) ?? throw new InvalidOperationException();
-                Client user = _clientRepository.Get(list.ClientId) ?? throw new InvalidOperationException();
-                returnProductsList.Add(new BoughtProducts(user, list, selectedProduct));
+            List<BoughtProducts> result = new List<BoughtProducts>();
+            foreach (GroceryListItem listItem in matchingItems) {
+                GroceryList? list = _groceryListRepository.Get(listItem.GroceryListId);
+                if (list == null) 
+                    continue;
+
+                Client? client = _clientRepository.Get(list.ClientId);
+                if (client == null) 
+                    continue;
+
+                Product? product = _productRepository.Get(listItem.ProductId);
+                if (product == null) 
+                    continue;
+
+                result.Add(new BoughtProducts(client, list, product));
             }
 
-            return returnProductsList ?? throw new NullReferenceException();
+            return result;
         }
     }
 }
+    

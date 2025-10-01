@@ -43,23 +43,28 @@ namespace Grocery.Core.Services {
         }
 
         public List<BestSellingProducts> GetBestSellingProducts(int topX = 5) {
-            List<BestSellingProducts> bestSellingProducts = new();
-            int productCount = _productRepository.GetAll().Count;
+            List<BestSellingProducts> rankedProducts = new();
+            List<Product> products = _productRepository.GetAll();
+            if (products.Count == 0) return rankedProducts;
 
-            for (int i = 1; i < productCount; i++) {
-                List<BoughtProducts> boughtProductsList = _iBoughtProductsService.Get(i);
-                if (!boughtProductsList.Any()) continue;
+            foreach (var product in products) {
+                List<BoughtProducts> boughtProductsList = _iBoughtProductsService.Get(product.Id);
+                if (boughtProductsList.Count == 0)
+                    continue;
 
-                var product = boughtProductsList.First().Product;
                 int soldAmount = 0;
 
                 foreach (BoughtProducts boughtProduct in boughtProductsList) {
                     List<GroceryListItem> groceryListItems = _groceriesRepository.GetAllOnGroceryListId(boughtProduct.GroceryList.Id);
-                    int tempAmount = groceryListItems.Where(listItem => listItem.ProductId == boughtProduct.Product.Id).Sum(listItem => listItem.Amount);
-                    soldAmount += tempAmount;
+                    soldAmount += groceryListItems
+                        .Where(li => li.ProductId == product.Id)
+                        .Sum(li => li.Amount);
                 }
 
-                bestSellingProducts.Add(new BestSellingProducts(
+                if (soldAmount <= 0)
+                    continue;
+
+                rankedProducts.Add(new BestSellingProducts(
                     product.Id,
                     product.name,
                     product.Stock,
@@ -68,15 +73,15 @@ namespace Grocery.Core.Services {
                 ));
             }
 
-            bestSellingProducts = bestSellingProducts
+            rankedProducts = rankedProducts
                 .OrderByDescending(p => p.nrOfSells)
                 .Take(topX)
                 .ToList();
 
-            for (int i = 0; i < bestSellingProducts.Count; i++) 
-                bestSellingProducts[i].ranking = i + 1;
+            for (int i = 0; i < rankedProducts.Count; i++)
+                rankedProducts[i].ranking = i + 1;
 
-            return bestSellingProducts;
+            return rankedProducts;
         }
 
         private void FillService(List<GroceryListItem> groceryListItems) {
