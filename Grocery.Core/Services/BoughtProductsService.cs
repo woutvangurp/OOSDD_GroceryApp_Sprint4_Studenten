@@ -1,7 +1,8 @@
-﻿using System.ComponentModel;
-using Grocery.Core.Interfaces.Repositories;
+﻿using Grocery.Core.Interfaces.Repositories;
 using Grocery.Core.Interfaces.Services;
 using Grocery.Core.Models;
+using Grocery.Core.Models.Enums;
+using System.ComponentModel;
 
 namespace Grocery.Core.Services {
     public class BoughtProductsService : IBoughtProductsService {
@@ -31,7 +32,7 @@ namespace Grocery.Core.Services {
                     continue;
 
                 Client? client = _clientRepository.Get(list.ClientId);
-                if (client == null) 
+                if (client is not { UserRole: Enums.Role.None })
                     continue;
 
                 Product? product = _productRepository.Get(listItem.ProductId);
