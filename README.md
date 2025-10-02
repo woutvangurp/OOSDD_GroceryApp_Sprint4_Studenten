@@ -25,7 +25,7 @@ dotnet build
 Run (exapmle):
 dotnet build -t:Run -f net8.0-android
 
-##Tests
+## Tests
 
 dotnet tests
 

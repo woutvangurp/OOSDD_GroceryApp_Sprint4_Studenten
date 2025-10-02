@@ -20,9 +20,7 @@ namespace Grocery.App.ViewModels
         {
             Products.Clear();
             foreach (BestSellingProducts item in _groceryListItemsService.GetBestSellingProducts())
-            {
                 Products.Add(item);
-            }
         }
 
         public override void OnAppearing()

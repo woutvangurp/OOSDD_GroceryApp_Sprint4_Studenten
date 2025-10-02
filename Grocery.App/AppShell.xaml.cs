@@ -1,7 +1,6 @@
-﻿    using CommunityToolkit.Mvvm.DependencyInjection;
+﻿using CommunityToolkit.Mvvm.DependencyInjection;
 using Grocery.App.ViewModels;
 using Grocery.App.Views;
-using Grocery.Core.Models.Enums;
 using static Grocery.Core.Models.Enums.Enums;
 
 namespace Grocery.App {
