@@ -1,0 +1,63 @@
+name: CI Pipeline
+
+on:
+  push:
+    branches: [ main, develop, feature/* ]
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  unit-tests:
+    name: Unit Tests
+    runs-on: windows-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup .NET SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Restore dependencies
+        run: dotnet restore TestCore/TestCore.csproj
+
+      - name: Run unit tests
+        run: dotnet test TestCore/TestCore.csproj --configuration Release --verbosity normal --logger "console;verbosity=detailed" --logger trx --results-directory TestResults
+
+      - name: Publish test results
+        uses: dorny/test-reporter@v1
+        if: always()
+        with:
+          name: NUnit Test Results
+          path: TestResults/*.trx
+          reporter: dotnet-trx
+
+  build-maui:
+    name: Build MAUI App
+    runs-on: windows-latest
+    needs: unit-tests
+    if: github.event_name == 'push' || github.event_name == 'pull_request'
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '8.0.x'
+        
+    - name: Install MAUI workload
+      run: dotnet workload install maui
+    
+    - name: Install MAUI Android workload
+      run: dotnet workload install maui-android
+        
+    - name: Restore dependencies
+      run: dotnet restore
+      
+    - name: Build Android app
+      run: dotnet build Grocery.App/Grocery.App.csproj -f net8.0-android --configuration Release
+
