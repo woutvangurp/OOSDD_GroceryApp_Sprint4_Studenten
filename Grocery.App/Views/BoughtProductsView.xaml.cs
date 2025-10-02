@@ -1,5 +1,6 @@
 using Grocery.App.ViewModels;
 using Grocery.Core.Models;
+using Grocery.Core.Models.Enums;
 
 namespace Grocery.App.Views;
 
@@ -10,10 +11,12 @@ public partial class BoughtProductsView : ContentPage
     public BoughtProductsView(BoughtProductsViewModel viewModel)
     {
         InitializeComponent();
-        BindingContext = viewModel;
         _viewModel = viewModel;
+       
+        BindingContext = viewModel;
     }
 
+   
     private void Picker_SelectedIndexChanged(object sender, EventArgs e)
     {
         var picker = (Picker)sender;
