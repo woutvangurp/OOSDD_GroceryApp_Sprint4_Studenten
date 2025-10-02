@@ -6,6 +6,7 @@ using Grocery.Core.Interfaces.Services;
 using Grocery.Core.Models;
 using System.Collections.ObjectModel;
 using System.Text.Json;
+using System.Windows.Input;
 
 namespace Grocery.App.ViewModels
 {
@@ -16,6 +17,8 @@ namespace Grocery.App.ViewModels
         private readonly IProductService _productService;
         private readonly IFileSaverService _fileSaverService;
         private string searchText = "";
+        public ICommand IncrementCommand { get; }
+        public ICommand DecrementCommand { get; }
 
         public ObservableCollection<GroceryListItem> MyGroceryListItems { get; set; } = [];
         public ObservableCollection<Product> AvailableProducts { get; set; } = [];
@@ -30,13 +33,16 @@ namespace Grocery.App.ViewModels
             _groceryListItemsService = groceryListItemsService;
             _productService = productService;
             _fileSaverService = fileSaverService;
+            IncrementCommand = new Command<int>(IncreaseAmount);
+            DecrementCommand = new Command<int>(DecreaseAmount);
             Load(groceryList.Id);
         }
 
         private void Load(int id)
         {
             MyGroceryListItems.Clear();
-            foreach (var item in _groceryListItemsService.GetAllOnGroceryListId(id)) MyGroceryListItems.Add(item);
+            foreach (GroceryListItem item in _groceryListItemsService.GetAllOnGroceryListId(id)) 
+                MyGroceryListItems.Add(item);
             GetAvailableProducts();
         }
 

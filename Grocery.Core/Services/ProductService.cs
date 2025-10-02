@@ -28,9 +28,8 @@ namespace Grocery.Core.Services
             throw new NotImplementedException();
         }
 
-        public Product? Get(int id)
-        {
-            throw new NotImplementedException();
+        public Product? Get(int id) {
+            return _productRepository.Get(id);
         }
 
         public Product? Update(Product item)
