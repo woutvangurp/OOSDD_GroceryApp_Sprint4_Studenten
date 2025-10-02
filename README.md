@@ -1,23 +1,38 @@
-# GroceryApp sprint4 Studentversie  
+# GroceryApp
 
-## UC10 Productaantal in boodschappenlijst
-Aanpassingen zijn compleet.
+Cross-platform (.NET MAUI, .NET 8, C# 12) grocery list application using MVVM (CommunityToolkit.Mvvm).
 
-## UC11 Meest verkochte producten
-Vereist aanvulling:  
-- Werk in GroceryListItemsService de methode GetBestSellingProducts uit.  
-- In BestSellingProductsView de kop van de tabel aanvullen met de gewenste kopregel boven de tabel. Daarnaast de inhoud van de tabel uitwerken.
+## Projects
+- Grocery.App: MAUI UI (Shell navigation, views, viewmodels)
+- Grocery.Core: Domain models, helpers (e.g. password hashing)
+- Grocery.Core.Data: In-memory repositories (e.g. GroceryListRepository)
+- TestCore: Unit tests (password verification)
 
-## UC13 Klanten tonen per product  
-Deze UC toont de klanten die een bepaald product hebben gekocht:  
-- Maak enum Role met als waarden None en Admin.  
-- Geef de Client class een property Role metb als type de enum Role. De default waarde is None.  
-- In Client Repo koppel je de rol Role.Admin aan user3 (= admin).
-- In BoughtProductsService werk je de Get(productid) functie uit zodat alle Clients die product met productid hebben gekocht met client, boodschappenlijst en product in de lijst staan die wordt geretourneerd.  
-- In BoughtProductsView moet de naam van de Client ewn de naam van de Boodschappenlijst worden getoond in de CollectionView.  
-- In BoughtProductsViewModel de OnSelectedProductChanged uitwerken zodat bij een ander product de lijst correct wordt gevuld.  
-- In GroceryListViewModel maak je de methode ShowBoughtProducts(). Als de Client de rol admin heeft dan navigeer je naar BoughtProductsView. Anders doe je niets.  
-- In GroceryListView voeg je een ToolbarItem toe met als binding Client.Name en als Command ShowBoughtProducts.  
+## Key Features
+- Role-based login (admin vs user)
+- Grocery lists and list items
+- Navigation via `AppShell` registered routes
+- Admin-only tab visibility (`BoughtProductsTab`)
 
+## Build & Run
+Install workloads:
 
-  
+Grocery.App/AppShell.xaml.cs
+
+Build:
+dotnet build
+
+Run (exapmle):
+dotnet build -t:Run -f net8.0-android
+
+##Tests
+
+dotnet tests
+
+Some negative password tests need implementation.
+
+## Repository Notes
+`GroceryListRepository.Add` / `Delete` not implemented; `Update` does not persist into the list (needs index replacement).
+
+## Next Steps (Suggested)
+Implement full CRUD, complete tests, persist data (e.g. API/SQLite), harden role handling.
