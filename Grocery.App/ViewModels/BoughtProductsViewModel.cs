@@ -35,7 +35,7 @@ namespace Grocery.App.ViewModels
 
             List<BoughtProducts> boughtProducts = _boughtProductsService.Get(newValue.Id);
             
-            foreach (var item in boughtProducts)
+            foreach (BoughtProducts item in boughtProducts)
                 BoughtProductsList.Add(item);
         }
 

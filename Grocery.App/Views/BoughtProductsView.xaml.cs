@@ -19,7 +19,7 @@ public partial class BoughtProductsView : ContentPage
    
     private void Picker_SelectedIndexChanged(object sender, EventArgs e)
     {
-        var picker = (Picker)sender;
+        Picker picker = (Picker)sender;
         int selectedIndex = picker.SelectedIndex;
 
         if (selectedIndex != -1)
